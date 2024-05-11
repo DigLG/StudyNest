@@ -5,6 +5,8 @@ import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity } from 'reac
 export default function Login(){
     const navigation = useNavigation();
 
+    const [hidePassword, setHidePassword] = useState(true);
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
@@ -20,26 +22,36 @@ export default function Login(){
                 />
             </View>
 
-            <View style={styles.containerForm}>
+            <View style={styles.inputContainer}>
+                <Image source={require('../../assets/email.png')} style={styles.icon} />
                 <TextInput
                     style={styles.input}
                     placeholder="EMAIL"
                     autoCorrect={false}
                     onChangeText={()=>{}}
                 />
+            </View>
 
-                <TextInput
+            <View style={styles.inputContainer}>
+                <Image source={require('../../assets/senha.png')} style={styles.icon} />
+                <TextInput 
                     style={styles.input}
                     placeholder="SENHA"
                     autoCorrect={false}
+                    secureTextEntry={hidePassword}
                     onChangeText={()=>{}}
                 />
-
+                <TouchableOpacity onPress={() => setHidePassword(!hidePassword)} style={{ marginRight: 15 }}>
+                    <Image 
+                        source={hidePassword ? require('../../assets/eye.png') : require('../../assets/closedEye.png')} 
+                        style={styles.icon} 
+                />
+        </TouchableOpacity>
             </View>
 
-            <Text style={styles.textLinkPassword} onPress={() => ('./recoverPassword.js')}>ESQUECI MINHA SENHA</Text>
+            <Text style={styles.textLinkPassword} onPress={() => navigation.navigate('RecuperarSenha')}>ESQUECI MINHA SENHA</Text>
 
-            <TouchableOpacity style={styles.button} onPress={() => ('./verifyLogin.js')}>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Foto')}>
                 <Text style={styles.textButton}>LOGIN</Text>
             </TouchableOpacity>
 
@@ -69,15 +81,27 @@ const styles = StyleSheet.create({
         paddingHorizontal: '10%',
         paddingBottom: '5%',
     },
-    input:{
+    inputContainer: {
+        width: '80%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderColor: '#000',
+        borderRadius: 25,
         backgroundColor: '#F9F7F7',
-        width: '100%',
         marginBottom: '5%',
+    },
+    icon: {
+        width: 40,
+        height: 40,
+        marginLeft: 10,
+    },
+    input:{
+        width: '100%',
         color: '#000',
         fontSize: 18,
         fontWeight: 'bold',
-        borderRadius: 25,
         padding: '3%',
+        flex: 1,
     },
     text:{
         color: '#F9F7F7',
