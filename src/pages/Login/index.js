@@ -74,13 +74,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
     },
-    containerForm:{
-        justifyContent: 'top',
-        alignItems: 'left',
-        width: '100%',
-        paddingHorizontal: '10%',
-        paddingBottom: '5%',
-    },
     inputContainer: {
         width: '80%',
         flexDirection: 'row',
