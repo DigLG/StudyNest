@@ -1,9 +1,9 @@
+import 'react-native-gesture-handler';
 import { StyleSheet, Text, View } from "react-native";
 
 export default function Foto(){
     return(
         <View Style={StyleSheet.container}>
-            <Text Style={Styles.title}>Foto</Text>
         </View>
     );
 }
