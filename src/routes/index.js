@@ -3,6 +3,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from '../pages/Login'
 import Falta from '../pages/Falta'
 import Resumo from '../pages/Resumo'
+import Perfil from '../pages/Perfil'
+import EditarPerfil from '../pages/EditarPerfil'
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +25,16 @@ export default function Routes(){
                 name="Resumo"
                 component= {Resumo}
                 options={{headerShown: false}}
+            />
+            <Stack.Screen
+                name="Perfil"
+                component = {Perfil}
+                options = {{headerShown: false}}
+            />
+            <Stack.Screen
+                name="EditarPerfil"
+                component = {EditarPerfil}
+                options = {{headerShown: false}}
             />
         </Stack.Navigator>
     )
