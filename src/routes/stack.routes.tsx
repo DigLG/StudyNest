@@ -5,6 +5,7 @@ import Falta from '../pages/Falta'
 import Resumo from '../pages/Resumo'
 import Perfil from '../pages/Perfil'
 import EditarPerfil from '../pages/EditarPerfil'
+
 import DrawerRoutes from "./drawer.routes";
 
 const Stack = createNativeStackNavigator();
