@@ -1,7 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Login from '../pages/Login'
-import Foto from '../pages/Foto'
 import Falta from '../pages/Falta'
 import Resumo from '../pages/Resumo'
 import Perfil from '../pages/Perfil'
