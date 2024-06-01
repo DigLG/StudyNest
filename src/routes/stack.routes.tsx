@@ -1,9 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Login from '../pages/Login'
-import Falta from '../pages/Falta'
-import Resumo from '../pages/Resumo'
-import Perfil from '../pages/Perfil'
+import Cadastro from "../pages/Cadastro";
 import EditarPerfil from '../pages/EditarPerfil'
 
 import DrawerRoutes from "./drawer.routes";
@@ -23,19 +21,9 @@ export default function StackRoutes(){
                 component= {DrawerRoutes}
                 options={{ headerShown: false}}
             />
-            <Stack.Screen
-                name="Falta"
-                component= {Falta}
-                options={{headerShown: false}}
-            />
-            <Stack.Screen
-                name="Resumo"
-                component= {Resumo}
-                options={{headerShown: false}}
-            />
-            <Stack.Screen
-                name="Perfil"
-                component = {Perfil}
+             <Stack.Screen
+                name="Cadastro"
+                component = {Cadastro}
                 options = {{headerShown: false}}
             />
             <Stack.Screen
@@ -43,6 +31,7 @@ export default function StackRoutes(){
                 component = {EditarPerfil}
                 options = {{headerShown: false}}
             />
+
         </Stack.Navigator>
         )
 }
