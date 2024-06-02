@@ -6,7 +6,7 @@ export default function Perfil() {
     const navigation = useNavigation();
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.returnContainer} onPress={() => navigation.navigate('Configuracao')}>
+            <TouchableOpacity style={styles.returnContainer} onPress={() => navigation.navigate('Configuração')}>
                 <Image source={require('../../assets/back_button.png')} style={styles.back_button} />
             </TouchableOpacity>
             <View style={styles.profileContainer}>

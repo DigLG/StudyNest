@@ -2,8 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Login from '../pages/Login'
 import Cadastro from "../pages/Cadastro";
-import EditarPerfil from '../pages/EditarPerfil'
-
+import EditarPerfil from '../pages/EditarPerfil';
 import DrawerRoutes from "./drawer.routes";
 
 const Stack = createNativeStackNavigator();
@@ -31,7 +30,6 @@ export default function StackRoutes(){
                 component = {EditarPerfil}
                 options = {{headerShown: false}}
             />
-
         </Stack.Navigator>
         )
 }
