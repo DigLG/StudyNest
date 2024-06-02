@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Alert, View, Text, TextInput, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 export default function Login(){
     const navigation = useNavigation();
@@ -10,6 +10,37 @@ export default function Login(){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
+
+    const authenticateUser = async () => {
+        try {
+            var responseClone;
+            const response = await fetch(`https://studynest-api.onrender.com/users/${email}/${password}`);
+            responseClone = response.clone();
+            const statusCode = response.status;
+            const data = await response.json();
+
+            console.log(`Status code: ${statusCode}`);
+
+            if (statusCode === 202) {
+                navigation.navigate('Foto');
+            } else{
+                Alert.alert(
+                    "Erro de autenticação",
+                    data.detail,
+                    [
+                      {text: 'OK', onPress: () => console.log('OK Pressed')},
+                    ],
+                    {cancelable: false},
+                  );
+            }
+        } catch (error) {
+            console.error('Error parsing JSON from response:', error, responseClone);
+            responseClone.text()
+            .then(function (bodyText) {
+                console.log('Received the following instead of valid JSON:', bodyText);
+            });
+        }
+    };
 
     return(
         <View style={styles.container}>
@@ -28,7 +59,7 @@ export default function Login(){
                     style={styles.input}
                     placeholder="EMAIL"
                     autoCorrect={false}
-                    onChangeText={()=>{}}
+                    onChangeText={setEmail}
                 />
             </View>
 
@@ -39,25 +70,21 @@ export default function Login(){
                     placeholder="SENHA"
                     autoCorrect={false}
                     secureTextEntry={hidePassword}
-                    onChangeText={()=>{}}
+                    onChangeText={setPassword}
                 />
                 <TouchableOpacity onPress={() => setHidePassword(!hidePassword)} style={{ marginRight: 15 }}>
                     <Image 
                         source={hidePassword ? require('../../assets/eye.png') : require('../../assets/closedEye.png')} 
                         style={styles.icon} 
-                />
-        </TouchableOpacity>
+                    />
+                </TouchableOpacity>
             </View>
 
-            <Text style={styles.textLinkPassword} onPress={() => navigation.navigate('RecuperarSenha')}>ESQUECI MINHA SENHA</Text>
-
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Foto')}>
+            <TouchableOpacity style={styles.button} onPress={authenticateUser}>
                 <Text style={styles.textButton}>LOGIN</Text>
             </TouchableOpacity>
 
             <Text style={styles.text}>NÃO POSSUI UMA CONTA? <Text style={styles.textLink} onPress={() => navigation.navigate('Cadastro')}>CLIQUE AQUI</Text></Text>              
-            
-
         </View>
     );
 }
@@ -129,6 +156,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 25,
         marginBottom: '5%',
+        marginTop: '15%',
     },
     buttonLink:{
         width: '100',

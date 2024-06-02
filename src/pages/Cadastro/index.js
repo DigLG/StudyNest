@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { View, Text, TextInput, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Alert, View, Text, TextInput, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 export default function Cadastro(){
     const navigation = useNavigation();
@@ -8,26 +8,92 @@ export default function Cadastro(){
     const [hidePassword, setHidePassword] = useState(true);
     const [hideConfirmPassword, setHideConfirmPassword] = useState(true);
 
+    const [name, setName] = useState('');
+    const [username, setUserName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [nome, setNome] = useState('');
+
+
+    const SignUp = async () => {
+        try {
+            var responseClone;
+            const url = `https://studynest-api.onrender.com/users?nome=${name}&nome_usuario=${username}&email=${email}&senha=${password}&confirma_senha=${confirmPassword}`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nome: name,
+                    nome_usuario: username,
+                    email: email,
+                    senha: password,
+                    confirma_senha: confirmPassword,
+                }),
+            });
+            
+            responseClone = response.clone();
+            const statusCode = response.status;
+            const data = await response.json();
+            console.log('Response Data:', data);
+            console.log(`Status code: ${statusCode}`);
+    
+            if (statusCode === 202) {
+                Alert.alert(
+                    "Sucesso!",
+                    data.detail,
+                    [
+                        {text: 'OK', onPress: () => navigation.navigate('Login')},
+                    ],
+                    {cancelable: false},
+                );
+            } else{
+                Alert.alert(
+                    "Erro de cadastro",
+                    data.detail,
+                    [
+                        {text: 'OK', onPress: () => console.log('OK Pressed')},
+                    ],
+                    {cancelable: false},
+                );
+            }
+            
+        } catch (error) {
+            console.error('Error parsing JSON from response:', error, responseClone);
+            responseClone.text()
+            .then(function (bodyText) {
+                console.log('Received the following instead of valid JSON:', bodyText);
+            });
+        }
+    };
 
     return(
-
         <View style={styles.container}>
             <Text style={styles.text}>JÁ POSSUI CONTA? <Text style={styles.textLink} onPress={() => navigation.navigate('Login')}>CLIQUE  AQUI</Text></Text>
-        
+    
             <Text style={styles.textInfo}>CADASTRE-SE</Text>
             <Text style={styles.textInfo2}>INSIRA SUAS INFORMAÇÕES</Text>
 
             <View style={styles.inputContainer}>
+            <Image source={require('../../assets/user_icon.png')} style={styles.icon} />
+                <TextInput
+                    style={styles.input}
+                    placeholderTextColor="#666"
+                    placeholder="NOME"
+                    autoCorrect={false}
+                    onChangeText={(text) => setName(text)}
+                />
+            </View>
+
+            <View style={styles.inputContainer}>
+            <Image source={require('../../assets/user_icon.png')} style={styles.icon} />
                 <TextInput
                     style={styles.input}
                     placeholderTextColor="#666"
                     placeholder="NOME DE USUARIO"
                     autoCorrect={false}
-                    onChangeText={(text) => setNome(text)}
+                    onChangeText={(text) => setUserName(text)}
                 />
             </View>
 
@@ -78,12 +144,9 @@ export default function Cadastro(){
                 </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Foto')}>
+            <TouchableOpacity style={styles.button} onPress={SignUp}>
                 <Text style={styles.textButton}>CONFIRMAR</Text>
             </TouchableOpacity>
-
-        
-
         </View>
     );
 }
@@ -117,29 +180,31 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         paddingVertical: 10,
-    },
-    textInfo: {
-        color: '#DBE2EF',
-        fontSize: 30,
-        fontWeight: 'bold',
-        marginBottom: 70,
-    },
-    textInfo2: {
-        color: '#DBE2EF',
-        fontSize: 17,
-        fontWeight: 'arial',
-        marginBottom: 20,
+        padding: '3%',
     },
     text:{
         color: '#F9F7F7',
-        fontSize: 16,
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    textInfo: {
+        color: '#F9F7F7',
+        fontSize: 40,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    textInfo2: {
+        color: '#F9F7F7',
+        fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 80,
     },
     textLink:{
         textDecorationLine: 'underline',
         color: '#DBE2EF',
-        fontSize: 16,
+        fontSize: 20,
+        fontWeight: 'bold',
     },
     textButton:{
         fontWeight: 'bold',
@@ -154,5 +219,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 25,
         marginBottom: 15,
+        marginTop: '20%',
     },
 });
