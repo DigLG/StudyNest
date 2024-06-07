@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Alert, View, Text, TextInput, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import Checkbox from 'expo-checkbox'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login(){
     const navigation = useNavigation();
@@ -10,6 +12,21 @@ export default function Login(){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
+
+    useEffect(() => {
+        const checkLogin = async () => {
+            const user = await AsyncStorage.getItem('user');
+            if (user !== null) {
+                const { email, password } = JSON.parse(user);
+                setEmail(email);
+                setPassword(password);
+                setRememberMe(true);
+                authenticateUser();
+            }
+        };
+    
+        checkLogin();
+    }, []);
 
     const authenticateUser = async () => {
         try {
@@ -21,14 +38,17 @@ export default function Login(){
 
             console.log(`Status code: ${statusCode}`);
 
-            if (statusCode === 202) {
+            if (statusCode === 202 || statusCode === 405) {
+                if (rememberMe) {
+                    await AsyncStorage.setItem('user', JSON.stringify({ email, password }));
+                }
                 navigation.navigate('Foto');
             } else{
                 Alert.alert(
                     "Erro de autenticação",
                     data.detail,
                     [
-                      {text: 'OK', onPress: () => console.log('OK Pressed')},
+                      {text: 'OK'},
                     ],
                     {cancelable: false},
                   );
@@ -79,6 +99,18 @@ export default function Login(){
                     />
                 </TouchableOpacity>
             </View>
+            
+            <View style={styles.checkboxContainer}>
+                <Checkbox
+                    style={{marginRight: '2%'}}
+                    disabled={false}
+                    value={rememberMe}
+                    onValueChange={(newValue) => setRememberMe(newValue)}
+                />
+                <Text style={styles.text}>MANTER-SE CONECTADO</Text>
+            </View>
+
+            <Text style={[styles.textLink, {marginTop: '5%'}]} onPress={() => navigation.navigate('RecuperarSenha')}>ESQUECI MINHA SENHA</Text>
 
             <TouchableOpacity style={styles.button} onPress={authenticateUser}>
                 <Text style={styles.textButton}>LOGIN</Text>
@@ -110,6 +142,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#F9F7F7',
         marginBottom: '5%',
     },
+    checkboxContainer: {
+        width: '75%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+    },
     icon: {
         width: 40,
         height: 40,
@@ -127,21 +165,12 @@ const styles = StyleSheet.create({
         color: '#F9F7F7',
         fontSize: 16,
         fontWeight: 'bold',
-        marginTop: '5%',
-        paddingRight: '5%',
     },
     textLink:{
         textDecorationLine: 'underline',
         color: '#DBE2EF',
         fontSize: 16,
-        marginLeft: '1%',
-    },
-    textLinkPassword:{
-        color: '#DBE2EF',
-        fontSize: 16,
         fontWeight: 'bold',
-        textDecorationLine: 'underline',
-        marginBottom: '10%',
     },
     textButton:{
         fontWeight: 'bold',
