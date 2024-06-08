@@ -1,9 +1,14 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import Login from '../pages/Login'
-import Cadastro from "../pages/Cadastro";
+import Falta from '../pages/Falta'
+import Resumo from '../pages/Resumo'
 import Perfil from '../pages/Perfil'
 import EditarPerfil from '../pages/EditarPerfil'
+import Cadastro from '../pages/Cadastro'
+import RecuperarSenha from '../pages/RecuperarSenha'
+import CodigoValidacao from '../pages/CodigoValidacao'
+import NovaSenha from '../pages/NovaSenha'
 
 import DrawerRoutes from "./drawer.routes";
 
@@ -22,10 +27,20 @@ export default function StackRoutes(){
                 component= {DrawerRoutes}
                 options={{ headerShown: false}}
             />
-             <Stack.Screen
+            <Stack.Screen
+                name="Falta"
+                component= {Falta}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen
                 name="Cadastro"
-                component = {Cadastro}
-                options = {{headerShown: false}}
+                component= {Cadastro}
+                options={{headerShown: false}}
+            />
+            <Stack.Screen
+                name="Resumo"
+                component= {Resumo}
+                options={{headerShown: false}}
             />
             <Stack.Screen
                 name="Perfil"
@@ -37,7 +52,21 @@ export default function StackRoutes(){
                 component = {EditarPerfil}
                 options = {{headerShown: false}}
             />
-
+            <Stack.Screen
+                name="RecuperarSenha"
+                component = {RecuperarSenha}
+                options = {{headerShown: false}}
+            />
+            <Stack.Screen
+                name="CodigoValidacao"
+                component= {CodigoValidacao}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="NovaSenha"
+                component= {NovaSenha}
+                options={{ headerShown: false }}
+            />
         </Stack.Navigator>
         )
 }

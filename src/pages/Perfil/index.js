@@ -13,7 +13,7 @@ export default function Perfil() {
 
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.returnContainer} onPress={() => navigation.navigate('Configuracao')}>
+            <TouchableOpacity style={styles.returnContainer} onPress={() => navigation.goBack()}>
                 <Image source={require('../../assets/back_button.png')} style={styles.back_button} />
             </TouchableOpacity>
             <View style={styles.profileContainer}>

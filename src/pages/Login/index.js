@@ -41,17 +41,29 @@ export default function Login(){
             if (statusCode === 202 || statusCode === 405) {
                 if (rememberMe) {
                     await AsyncStorage.setItem('user', JSON.stringify({ email, password }));
+                    navigation.navigate('Foto');
                 }
                 navigation.navigate('Foto');
             } else{
-                Alert.alert(
-                    "Erro de autenticação",
-                    data.detail,
-                    [
-                      {text: 'OK'},
-                    ],
-                    {cancelable: false},
-                  );
+                if (statusCode === 422){
+                    Alert.alert(
+                        "Erro de autenticação",
+                        data.detail,
+                        [
+                        {text: 'OK', onPress: () => navigation.navigate('CodigoValidacao', {userEmail: email, userTypeOfMessage: 'activate_account'})},
+                        ],
+                        {cancelable: false},
+                    );
+                } else{
+                    Alert.alert(
+                        "Erro de autenticação",
+                        data.detail,
+                        [
+                        {text: 'OK'},
+                        ],
+                        {cancelable: false},
+                    );
+                }
             }
         } catch (error) {
             console.error('Error parsing JSON from response:', error, responseClone);
@@ -110,7 +122,7 @@ export default function Login(){
                 <Text style={styles.text}>MANTER-SE CONECTADO</Text>
             </View>
 
-            <Text style={[styles.textLink, {marginTop: '5%'}]} onPress={() => navigation.navigate('RecuperarSenha')}>ESQUECI MINHA SENHA</Text>
+            <Text style={[styles.textLink, {marginTop: '5%'}]} onPress={() => navigation.navigate('RecuperarSenha', {userTypeOfMessage: 'recover_password'})}>ESQUECI MINHA SENHA</Text>
 
             <TouchableOpacity style={styles.button} onPress={authenticateUser}>
                 <Text style={styles.textButton}>LOGIN</Text>

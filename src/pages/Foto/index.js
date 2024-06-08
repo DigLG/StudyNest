@@ -1,7 +1,42 @@
 import 'react-native-gesture-handler';
-import { StyleSheet, Text, View } from "react-native";
+import React, { useEffect } from 'react';
+import { Alert, BackHandler, StyleSheet, Text, View } from "react-native";
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function Foto(){
+    const navigation = useNavigation();
+    const route = useRoute();
+
+    useEffect(() => {
+        const backAction = () => {
+            Alert.alert("Calma ai!", "Você tem realmente deseja sair do aplicativo?", [
+                {
+                    text: "Cancelar",
+                    onPress: () => null,
+                    style: "cancel"
+                },
+                { text: "Confirmar", onPress: () => BackHandler.exitApp() }
+            ]);
+            return true;
+        };
+
+        const onScreenFocus = () => {
+            BackHandler.addEventListener("hardwareBackPress", backAction);
+        };
+
+        const onScreenBlur = () => {
+            BackHandler.removeEventListener("hardwareBackPress", backAction);
+        };
+
+        navigation.addListener('focus', onScreenFocus);
+        navigation.addListener('blur', onScreenBlur);
+
+        return () => {
+            navigation.removeListener('focus', onScreenFocus);
+            navigation.removeListener('blur', onScreenBlur);
+        };
+    }, []);
+
     return(
         <View Style={StyleSheet.container}>
         </View>
