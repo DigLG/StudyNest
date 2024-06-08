@@ -30,7 +30,7 @@ export default function RecuperarSenha() {
             console.log(`Status code: ${statusCode}`);
     
             if (statusCode === 202) {
-                navigation.navigate('CodigoValidacao', {userEmail: email})
+                navigation.navigate('CodigoValidacao', {userEmail: email, userTypeOfMessage: typeofmessage})
             } else{
                 Alert.alert(
                     "Erro",
