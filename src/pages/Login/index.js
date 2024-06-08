@@ -41,9 +41,13 @@ export default function Login(){
             if (statusCode === 202 || statusCode === 405) {
                 if (rememberMe) {
                     await AsyncStorage.setItem('user', JSON.stringify({ email, password }));
-                    navigation.navigate('Foto');
+                    navigation.navigate('MainDrawer', {
+                        screen: 'Foto'
+                      });
                 }
-                navigation.navigate('Foto');
+                navigation.navigate('MainDrawer', {
+                    screen: 'Foto'
+                  });
             } else{
                 if (statusCode === 422){
                     Alert.alert(
