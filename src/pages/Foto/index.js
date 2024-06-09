@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, KeyboardAvoidingView, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, TouchableWithoutFeedback } from "react-native";
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function Foto() {
@@ -8,6 +8,11 @@ export default function Foto() {
     const [modalVisible, setModalVisible] = useState(false);
     const [disciplinaNome, setDisciplinaNome] = useState('');
     const [turma, setTurma] = useState('');
+    const [filteredDisciplinas, setFilteredDisciplinas] = useState([]);
+    const [showTurmas, setShowTurmas] = useState(false);
+
+    const disciplinas = ["Matemática", "Português", "Ciências"];
+    const turmas = ["Turma A", "Turma B", "Turma C","Turma D", "Turma E"];
 
     const handleButtonPress = () => {
         setModalVisible(true);
@@ -22,6 +27,24 @@ export default function Foto() {
     const handleCancelarPress = () => {
         setModalVisible(false);
     };
+
+    const filterDisciplinas = (text) => {
+        setDisciplinaNome(text);
+        setFilteredDisciplinas(
+            disciplinas.filter(d => d.toLowerCase().includes(text.toLowerCase()))
+        );
+    };
+
+    const renderItem = ({ item }) => (
+        <TouchableWithoutFeedback onPress={() => {
+            setDisciplinaNome(item);
+            setFilteredDisciplinas([]);
+        }}>
+            <View style={styles.item}>
+                <Text style={styles.itemText}>{item}</Text>
+            </View>
+        </TouchableWithoutFeedback>
+    );
 
     return (
         <KeyboardAvoidingView
@@ -49,15 +72,41 @@ export default function Foto() {
                         <Text style={[styles.modalText, styles.leftAlign]}>*Nome/Código da Disciplina:</Text>
                         <TextInput
                             style={[styles.input, styles.inputText]}
-                            onChangeText={text => setDisciplinaNome(text)}
+                            onChangeText={filterDisciplinas}
                             value={disciplinaNome}
                         />
+                        {filteredDisciplinas.length > 0 && (
+                            <FlatList
+                                data={filteredDisciplinas}
+                                renderItem={renderItem}
+                                keyExtractor={(item) => item}
+                                style={styles.suggestions}
+                            />
+                        )}
                         <Text style={[styles.modalText, styles.leftAlign]}>Turma:</Text>
-                        <TextInput
-                            style={[styles.input, styles.inputText]}
-                            onChangeText={text => setTurma(text)}
-                            value={turma}
-                        />
+                        <TouchableOpacity
+                            style={styles.input}
+                            onPress={() => setShowTurmas(!showTurmas)}
+                        >
+                            <Text style={styles.inputText}>{turma || "Selecione a Turma"}</Text>
+                        </TouchableOpacity>
+                        {showTurmas && (
+                            <FlatList
+                                data={turmas}
+                                renderItem={({ item }) => (
+                                    <TouchableWithoutFeedback onPress={() => {
+                                        setTurma(item);
+                                        setShowTurmas(false);
+                                    }}>
+                                        <View style={styles.item}>
+                                            <Text style={styles.itemText}>{item}</Text>
+                                        </View>
+                                    </TouchableWithoutFeedback>
+                                )}
+                                keyExtractor={(item) => item}
+                                style={styles.suggestions}
+                            />
+                        )}
                         <View style={styles.buttonContainer}>
                             <TouchableOpacity
                                 style={styles.modalButton}
@@ -136,6 +185,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         marginBottom: 20,
         width: '100%',
+        justifyContent: 'center'
     },
     inputText: {
         color: 'black',
@@ -160,5 +210,21 @@ const styles = StyleSheet.create({
         color: "white",
         fontWeight: "bold",
         textAlign: "center",
+    },
+    suggestions: {
+        maxHeight: 100,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        width: '100%',
+        marginBottom: 20,
+    },
+    item: {
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
+    },
+    itemText: {
+        color: 'black',
     },
 });
