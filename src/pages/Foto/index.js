@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, KeyboardAvoidingView, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, TouchableWithoutFeedback } from "react-native";
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -10,10 +10,24 @@ export default function Foto() {
     const [turma, setTurma] = useState('');
     const [filteredDisciplinas, setFilteredDisciplinas] = useState([]);
     const [showTurmas, setShowTurmas] = useState(false);
+    const [disciplinas, setDisciplinas] = useState([]);
 
-    const disciplinas = ["Matemática", "Português", "Ciências"];
-    const turmas = ["Turma A", "Turma B", "Turma C","Turma D", "Turma E"];
+    useEffect(() => {
+        fetchDisciplinas();
+    }, []);
 
+    const fetchDisciplinas = async () => {
+        try {
+            const response = await fetch('https://studynest-api.onrender.com/disciplinas');
+            if (!response.ok) {
+                throw new Error('Erro ao buscar disciplinas');
+            }
+            const data = await response.json();
+            setDisciplinas(data);
+        } catch (error) {
+            console.error('Erro ao buscar disciplinas:', error);
+        }
+    };
     const handleButtonPress = () => {
         setModalVisible(true);
     };
