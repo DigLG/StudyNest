@@ -123,7 +123,11 @@ export default function Login(){
             </View>
 
             <Text style={[styles.textLink, {marginTop: '5%'}]} onPress={() => navigation.navigate('RecuperarSenha', {userTypeOfMessage: 'recover_password'})}>ESQUECI MINHA SENHA</Text>
-
+            
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CameraPage')}>
+                <Text style={styles.textButton}>CAMERA</Text>
+            </TouchableOpacity>
+            
             <TouchableOpacity style={styles.button} onPress={authenticateUser}>
                 <Text style={styles.textButton}>LOGIN</Text>
             </TouchableOpacity>
