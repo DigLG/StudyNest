@@ -1,27 +1,141 @@
-import React, {useState, useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Image, TouchableOpacity, Text, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { View, StyleSheet, Image, TouchableOpacity, Text} from 'react-native';
+import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function FaltaRegistro() {
     const navigation = useNavigation();
     const [faltas, setFaltas] = useState(0);
-    useEffect(() => {
-        const loadFaltas = async () => {
-            try {
-                const storedFaltas = await AsyncStorage.getItem('faltas');
-                if (storedFaltas !== null) {
-                    setFaltas(parseInt(storedFaltas, 10));
-                }
-            } catch (e) {
-                console.error('Failed to load faltas from storage', e);
-            }
-        };
 
+    useEffect(() => {
+        requestPermissions();
         loadFaltas();
     }, []);
-    const increaseFaltas = () => setFaltas(faltas + 1);
-    const decreaseFaltas = () => setFaltas(faltas > 0 ? faltas - 1 : 0);
+
+    useEffect(() => {
+        if (faltas > 5) {
+            scheduleFixedNotifications();
+        } 
+        else {
+            cancelAllNotifications();
+        }
+    }, [faltas]);
+
+    const requestPermissions = async () => {
+        try {
+            const { status } = await Notifications.requestPermissionsAsync();
+            if (status !== 'granted') {
+                alert('Permission not granted for notifications');
+                console.warn('Notification permissions not granted');
+            } else {
+                console.log('Notification permissions granted');
+            }
+        } catch (error) {
+            console.error('Error requesting notification permissions:', error);
+        }
+    };
+
+    const loadFaltas = async () => {
+        try {
+            const savedFaltas = await AsyncStorage.getItem('faltas');
+            if (savedFaltas !== null) {
+                setFaltas(parseInt(savedFaltas, 10));
+            }
+        } catch (error) {
+            console.error('Failed to load faltas:', error);
+        }
+    };
+
+    const saveFaltas = async (newFaltas) => {
+        try {
+            await AsyncStorage.setItem('faltas', newFaltas.toString());
+        } catch (error) {
+            console.error('Failed to save faltas:', error);
+        }
+    };
+
+    const createNotificationChannel = async () => {
+        if (Platform.OS === 'android') {
+            try {
+                await Notifications.setNotificationChannelAsync('default', {
+                    name: 'Default',
+                    importance: Notifications.AndroidImportance.MAX,
+                    vibrationPattern: [0, 250, 250, 250],
+                    lightColor: '#FF231F7C',
+                });
+                console.log("Notification channel created");
+            } catch (error) {
+                console.error('Error creating notification channel:', error);
+            }
+        }
+    };
+
+    const cancelAllNotifications = async () => {
+        try {
+            await Notifications.cancelAllScheduledNotificationsAsync();
+            console.log("All notifications cancelled");
+        } catch (error) {
+            console.error('Error cancelling notifications:', error);
+        }
+    };
+
+    const scheduleFixedNotifications = () => {
+        cancelAllNotifications();
+        createNotificationChannel();
+
+        const notificationTimes = [
+            { day: 1, hour: 23, minute: 22 },
+            { day: 1, hour: 23, minute: 23 },
+        ];
+
+        notificationTimes.forEach(({ day, hour, minute }) => {
+            scheduleWeeklyNotification(day, hour, minute, faltas);
+        });
+    };
+
+    const scheduleWeeklyNotification = async (day, hour, minute, faltas) => {
+        const now = new Date();
+        let nextNotificationDate = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate() + ((day + 7 - now.getDay()) % 7),
+            hour,
+            minute,
+            0,
+            0
+        );
+    
+        if (nextNotificationDate <= now) {
+            nextNotificationDate.setDate(nextNotificationDate.getDate() + 7);
+        }
+    
+        const remainingFaltas = 8 - faltas;
+    
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: "AVISO: FALTAS",
+                body: `Você pode faltar somente ${remainingFaltas}, preste atenção.`,
+                data: { data: 'goes here' },
+            },
+            trigger: {
+                date: nextNotificationDate,
+                repeats: true,
+            },
+        });
+    };
+
+    const increaseFaltas = () => {
+        const newFaltas = faltas + 1;
+        setFaltas(newFaltas);
+        saveFaltas(newFaltas);
+    };
+
+    const decreaseFaltas = () => {
+        const newFaltas = Math.max(0, faltas - 1);
+        setFaltas(newFaltas);
+        saveFaltas(newFaltas);
+    };
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.returnContainer} onPress={() => navigation.navigate('Falta')}>
@@ -37,7 +151,7 @@ export default function FaltaRegistro() {
             </View>
             <View style={styles.totalMissContainer}>
                 <Text style={styles.white_text}>FALTAS TOTAIS</Text>
-                <Text style={styles.white_text}>X FALTAS          </Text>
+                <Text style={styles.white_text}>8 FALTAS          </Text>
             </View>
             <View style={styles.currentMissContainer}>
                 <Text style={styles.white_text}>FALTAS ATUAIS</Text>
@@ -186,6 +300,7 @@ const styles = StyleSheet.create({
         height: 80,
         borderRadius: 25,
         backgroundColor: '#DBE2EF',
+        marginHorizontal: 10,
     },
     white_text:{
         color: '#fff',

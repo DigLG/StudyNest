@@ -52,7 +52,7 @@ export default function Configuracao() {
             </TouchableOpacity>
             <TouchableOpacity style={styles.infoContainer} onPress={console.log('Work in Progress!')}>
                 <Image source={require('../../assets/info.png')} style={styles.configPics} />
-                <Text style={styles.text}>SUPORTE</Text>
+                <Text style={styles.text}>QUEM SOMOS</Text>
             </TouchableOpacity>
         </View>
     );
