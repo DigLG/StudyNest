@@ -8,7 +8,7 @@
     ],
     "plugins": [
       [
-        "react-native-vision-camera",
+        "expo-camera",
         {
           "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera."
         }

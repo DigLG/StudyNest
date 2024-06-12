@@ -9,7 +9,8 @@ import Cadastro from '../pages/Cadastro'
 import RecuperarSenha from '../pages/RecuperarSenha'
 import CodigoValidacao from '../pages/CodigoValidacao'
 import NovaSenha from '../pages/NovaSenha'
-import CameraPage from "../pages/CameraPage";
+import CameraPage from '../pages/CameraPage'
+
 import DrawerRoutes from "./drawer.routes";
 
 const Stack = createNativeStackNavigator();
