@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, KeyboardAvoidingView, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, TouchableWithoutFeedback } from "react-native";
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Foto() {
     const navigation = useNavigation();
@@ -12,10 +13,24 @@ export default function Foto() {
     const [showTurmas, setShowTurmas] = useState(false);
     const [disciplinas, setDisciplinas] = useState([]);
     const [turmas, setTurmas] = useState([]);
+    const [emailFromStorage, setEmailFromStorage] = useState('');
 
     useEffect(() => {
+        getEmailFromStorage();
         fetchDisciplinas();
     }, []);
+
+    const getEmailFromStorage = async () => {
+        try {
+            const userData = await AsyncStorage.getItem('user');
+            if (userData !== null) {
+                const { email } = JSON.parse(userData);
+                setEmailFromStorage(email);
+            }
+        } catch (error) {
+            console.error('Erro ao obter email do AsyncStorage:', error);
+        }
+    };
 
     const fetchDisciplinas = async () => {
         try {
@@ -47,10 +62,29 @@ export default function Foto() {
         setModalVisible(true);
     };
 
-    const handleConfirmarPress = () => {
-        console.log("Nome da disciplina:", disciplinaNome);
-        console.log("Turma:", turma);
-        setModalVisible(false);
+    const handleConfirmarPress = async () => {
+        try {
+            const url = `https://studynest-api.onrender.com/add_grade?email_usuario=${encodeURIComponent(emailFromStorage)}&codigo_disciplina=${encodeURIComponent(disciplinaNome)}&turma_disciplina=${encodeURIComponent(turma)}`;
+    
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+    
+            if (!response.ok) {
+                throw new Error('Erro ao cadastrar disciplina');
+            }
+    
+            const data = await response.json();
+            console.log('Dados cadastrados com sucesso:', data.message);
+            setModalVisible(false);
+    
+        } catch (error) {
+            console.error('Erro ao cadastrar disciplina:', error);
+            Alert.alert('Erro', 'Não foi possível cadastrar a disciplina. Por favor, tente novamente.');
+        }
     };
 
     const handleCancelarPress = () => {
@@ -101,7 +135,7 @@ export default function Foto() {
                         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                         style={styles.modalView}
                     >
-                        <Text style={[styles.modalText, styles.leftAlign]}>*Nome/Código da Disciplina:</Text>
+                        <Text style={[styles.modalText, styles.leftAlign]}>Nome/Código da Disciplina:</Text>
                         <TextInput
                             style={[styles.input, styles.inputText]}
                             onChangeText={filterDisciplinas}
