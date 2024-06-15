@@ -11,6 +11,7 @@ export default function Foto() {
     const [filteredDisciplinas, setFilteredDisciplinas] = useState([]);
     const [showTurmas, setShowTurmas] = useState(false);
     const [disciplinas, setDisciplinas] = useState([]);
+    const [turmas, setTurmas] = useState([]);
 
     useEffect(() => {
         fetchDisciplinas();
@@ -28,6 +29,20 @@ export default function Foto() {
             console.error('Erro ao buscar disciplinas:', error);
         }
     };
+
+    const fetchTurmas = async (codigoDisciplina) => {
+        try {
+            const response = await fetch(`https://studynest-api.onrender.com/turmas/${codigoDisciplina}`);
+            if (!response.ok) {
+                throw new Error('Erro ao buscar turmas');
+            }
+            const data = await response.json();
+            setTurmas(data);
+        } catch (error) {
+            console.error('Erro ao buscar turmas:', error);
+        }
+    };
+
     const handleButtonPress = () => {
         setModalVisible(true);
     };
@@ -49,11 +64,14 @@ export default function Foto() {
         );
     };
 
+    const handleDisciplinaSelect = (disciplina) => {
+        setDisciplinaNome(disciplina);
+        setFilteredDisciplinas([]);
+        fetchTurmas(disciplina);
+    };
+
     const renderItem = ({ item }) => (
-        <TouchableWithoutFeedback onPress={() => {
-            setDisciplinaNome(item);
-            setFilteredDisciplinas([]);
-        }}>
+        <TouchableWithoutFeedback onPress={() => handleDisciplinaSelect(item)}>
             <View style={styles.item}>
                 <Text style={styles.itemText}>{item}</Text>
             </View>
