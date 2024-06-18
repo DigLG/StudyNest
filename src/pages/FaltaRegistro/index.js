@@ -4,6 +4,19 @@ import { useNavigation } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+function aulasFaltaveis(horas){
+    horas *= 0.25; //todas as matérias da PUC requerem 75% de presença
+    horas = Math.floor(Math.round(horas)/2);
+    return horas;
+}
+function calculaHoras(creditos){
+    let horaTotal = 16.5*creditos;
+    return horaTotal;
+}
+const creditos = 4 //creditos deve receber um valor obtido pelo banco de dados
+let horas = calculaHoras(creditos);
+const aulasPermitidas = aulasFaltaveis(horas);
+
 export default function FaltaRegistro() {
     const navigation = useNavigation();
     const [faltas, setFaltas] = useState(0);
@@ -14,7 +27,7 @@ export default function FaltaRegistro() {
     }, []);
 
     useEffect(() => {
-        if (faltas > 5) {
+        if (aulasPermitidas - faltas <= 3) {
             scheduleFixedNotifications();
         } 
         else {
@@ -110,7 +123,7 @@ export default function FaltaRegistro() {
             nextNotificationDate.setDate(nextNotificationDate.getDate() + 7);
         }
     
-        const remainingFaltas = 8 - faltas;
+        const remainingFaltas = aulasPermitidas - faltas;
     
         await Notifications.scheduleNotificationAsync({
             content: {
@@ -151,7 +164,7 @@ export default function FaltaRegistro() {
             </View>
             <View style={styles.totalMissContainer}>
                 <Text style={styles.white_text}>FALTAS TOTAIS</Text>
-                <Text style={styles.white_text}>8 FALTAS          </Text>
+                <Text style={styles.white_text}>{aulasPermitidas} FALTAS          </Text>
             </View>
             <View style={styles.currentMissContainer}>
                 <Text style={styles.white_text}>FALTAS ATUAIS</Text>
@@ -162,7 +175,7 @@ export default function FaltaRegistro() {
             </View>
             <View style={styles.criteriaContainer}>
                 <Text style={styles.white_text}>CRITÉRIO</Text>
-                <Text style={styles.white_text}>X% PRESENÇA</Text>
+                <Text style={styles.white_text}>75% PRESENÇA</Text>
             </View>
             <View style={styles.disciplineContainer}>
                 <Text style={styles.discipline_text}>DISCIPLINA</Text>
