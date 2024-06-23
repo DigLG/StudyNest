@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     addSummaryButtonText:{
         color: '#fff',
         fontSize: 16,
-        fontWeight: 'Inter',
+        fontWeight: 'bold',
     },
     menu: {
         width: 50,

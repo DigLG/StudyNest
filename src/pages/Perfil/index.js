@@ -1,12 +1,19 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { View, StyleSheet, Image, TouchableOpacity, Text} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Perfil() {
     const navigation = useNavigation();
+
+    const Logout = async () => {
+        await AsyncStorage.removeItem('user');
+        navigation.navigate('Login');
+      };
+
     return (
         <View style={styles.container}>
-            <TouchableOpacity style={styles.returnContainer} onPress={() => navigation.navigate('Configuração')}>
+            <TouchableOpacity style={styles.returnContainer} onPress={() => navigation.goBack()}>
                 <Image source={require('../../assets/back_button.png')} style={styles.back_button} />
             </TouchableOpacity>
             <View style={styles.profileContainer}>
@@ -21,9 +28,9 @@ export default function Perfil() {
             <TouchableOpacity style={styles.editProfileContainer} onPress={() => navigation.navigate('EditarPerfil')}>
                 <Text style={styles.editProfile}>Editar Perfil</Text>
             </TouchableOpacity>
-            <View style={styles.shareContainer}>
-                <Image source={require('../../assets/share.png')} style={styles.shareImage}/>
-                <Text style={styles.shareText}>Compartilhar</Text>
+            <View style={styles.logoutContainer}>
+                <Image source={require('../../assets/logout.png')} style={styles.logoutImage}/>
+                <Text style={styles.logoutText} onPress={Logout}>Sair da conta</Text>
             </View>
         </View>
     );
@@ -37,13 +44,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     returnContainer: {
-        position: 'absolute',
-        bottom: 1,
-        left: 0,
         flex: 1,
-        width: '15%',
-        height: 60,
-        top: 45,
+        marginTop: '15%',
+        marginRight: '75%',
         flexDirection: 'row',
         backgroundColor: 'transparent',
     },
@@ -60,28 +63,29 @@ const styles = StyleSheet.create({
     usernameContainer:{
         position: 'absolute',
         alignItems: 'center',
-        top: 400,
+        top: 405,
     },
     editProfileContainer: {
         position: 'absolute',
-        top: 450,
+        top: 470,
         width: '80%',
+        height: '5%',
         alignItems: 'center',
+        justifyContent: 'center',
         borderColor: 'transparent',
-        borderRadius: 25,
+        borderRadius: 26,
         backgroundColor: '#112D4E',
     },
-    shareContainer: {
+    logoutContainer: {
         position: 'absolute',
-        bottom: 30,
-        width: '60%',
+        bottom: 70,
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: 'transparent',
     },
     back_button: {
-        width: 50,
-        height: 50,
+        width: 70,
+        height: 70,
     },
     profilePic: {
         width: 200,
@@ -95,18 +99,18 @@ const styles = StyleSheet.create({
     },
     name:{
         color: '#112D4E',
-        fontSize: 25,
+        fontSize: 26,
         fontWeight: 'bold',
     },
     editProfile:{
         color: '#fff',
-        fontSize: 25,
+        fontSize: 26,
         fontWeight: 'bold',
     },
-    shareImage:{
-        width: 30,
-        height: 30,
-        marginRight: 20,
+    logoutImage:{
+        width: 50,
+        height: 50,
+        marginRight: '2%'
     },
     shareText:{
         color: '#112D4E',
