@@ -1,5 +1,6 @@
+import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
-import { Alert, KeyboardAvoidingView, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, TouchableWithoutFeedback } from "react-native";
+import { Alert, KeyboardAvoidingView, Modal, BackHandler, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, TouchableWithoutFeedback } from "react-native";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -191,6 +192,16 @@ export default function Foto() {
                 </View>
             </Modal>
         </KeyboardAvoidingView>
+
+    return(
+
+        
+        <View Style={StyleSheet.container}>
+            <TouchableOpacity Style={Styles.button} onPress={() => navigation.navigate('CameraPage')}>
+                <Text style={Styles.textButton}>CAMERA</Text>
+            </TouchableOpacity>
+        </View>
+
     );
 }
 
@@ -201,6 +212,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+
     content: {
         position: 'absolute',
         bottom: 20,
@@ -294,3 +306,4 @@ const styles = StyleSheet.create({
         color: 'black',
     },
 });
+

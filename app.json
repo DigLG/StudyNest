@@ -5,7 +5,26 @@
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera."
+        }
+      ]
+    ],
+    "android": {
+      "permissions": [
+        "android.permission.CAMERA"
+      ],
+      "package": "com.anonymous.StudyNest"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2b7651f1-1f09-45df-813c-47b5cae98812"
+      }
+    }
   },
   "name": "StudyNest"
 }

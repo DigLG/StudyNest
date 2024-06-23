@@ -9,6 +9,7 @@ import Cadastro from '../pages/Cadastro'
 import RecuperarSenha from '../pages/RecuperarSenha'
 import CodigoValidacao from '../pages/CodigoValidacao'
 import NovaSenha from '../pages/NovaSenha'
+import CameraPage from '../pages/CameraPage'
 
 import DrawerRoutes from "./drawer.routes";
 
@@ -65,6 +66,11 @@ export default function StackRoutes(){
             <Stack.Screen
                 name="NovaSenha"
                 component= {NovaSenha}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="CameraPage"
+                component= {CameraPage}
                 options={{ headerShown: false }}
             />
         </Stack.Navigator>

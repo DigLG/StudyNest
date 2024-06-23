@@ -1,4 +1,4 @@
-package com.studynest
+package com.anonymous.StudyNest
 
 import android.os.Build
 import android.os.Bundle
