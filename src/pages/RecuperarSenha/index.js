@@ -28,7 +28,7 @@ export default function RecuperarSenha() {
             const data = await response.json();
             console.log('Response Data:', data);
             console.log(`Status code: ${statusCode}`);
-
+    
             if (statusCode === 202) {
                 navigation.navigate('CodigoValidacao', {userEmail: email, userTypeOfMessage: typeofmessage})
             } else{

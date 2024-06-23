@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     },
     username:{
         color: '#818182',
-        fontSize: 25,
+        fontSize: 26,
         fontWeight: 'bold',
     },
     name:{
@@ -106,15 +106,16 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 26,
         fontWeight: 'bold',
+        marginBottom: '1%',
     },
     logoutImage:{
         width: 50,
         height: 50,
-        marginRight: '2%'
+        marginRight: '2%',
     },
-    shareText:{
+    logoutText:{
         color: '#112D4E',
-        fontSize: 25,
+        fontSize: 32,
         fontWeight: 'bold',
     },
 });

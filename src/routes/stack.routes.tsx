@@ -4,7 +4,7 @@ import Login from '../pages/Login'
 import Falta from '../pages/Falta'
 import Resumo from '../pages/Resumo'
 import Perfil from '../pages/Perfil'
-import EditarPerfil from '../pages/EditarPerfil';
+import EditarPerfil from '../pages/EditarPerfil'
 import Cadastro from '../pages/Cadastro'
 import RecuperarSenha from '../pages/RecuperarSenha'
 import CodigoValidacao from '../pages/CodigoValidacao'
@@ -19,9 +19,14 @@ export default function StackRoutes(){
     return(
         <Stack.Navigator>
             <Stack.Screen
-                name="MainDrawer"
+                name="Login"
                 component= {Login}
                 options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="MainDrawer"
+                component= {DrawerRoutes}
+                options={{ headerShown: false}}
             />
             <Stack.Screen
                 name="Falta"
@@ -29,14 +34,9 @@ export default function StackRoutes(){
                 options={{headerShown: false}}
             />
             <Stack.Screen
-                name="Foto"
-                component= {DrawerRoutes}
-                options={{ headerShown: false}}
-            />
-            <Stack.Screen
                 name="Cadastro"
-                component = {Cadastro}
-                options = {{headerShown: false}}
+                component= {Cadastro}
+                options={{headerShown: false}}
             />
             <Stack.Screen
                 name="Resumo"

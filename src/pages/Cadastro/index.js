@@ -14,6 +14,7 @@ export default function Cadastro(){
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+
     const SignUp = async () => {
         try {
             var responseClone;
@@ -31,13 +32,13 @@ export default function Cadastro(){
                     confirma_senha: confirmPassword,
                 }),
             });
-
+            
             responseClone = response.clone();
             const statusCode = response.status;
             const data = await response.json();
             console.log('Response Data:', data);
             console.log(`Status code: ${statusCode}`);
-
+    
             if (statusCode === 202) {
                 Alert.alert(
                     "Sucesso!",
@@ -57,7 +58,7 @@ export default function Cadastro(){
                     {cancelable: false},
                 );
             }
-
+            
         } catch (error) {
             console.error('Error parsing JSON from response:', error, responseClone);
             responseClone.text()
@@ -68,10 +69,9 @@ export default function Cadastro(){
     };
 
     return(
-
         <View style={styles.container}>
             <Text style={styles.text}>JÁ POSSUI CONTA? <Text style={styles.textLink} onPress={() => navigation.navigate('Login')}>CLIQUE  AQUI</Text></Text>
-        
+    
             <Text style={styles.textInfo}>CADASTRE-SE</Text>
             <Text style={styles.textInfo2}>INSIRA SUAS INFORMAÇÕES</Text>
 
@@ -85,7 +85,7 @@ export default function Cadastro(){
                     onChangeText={(text) => setName(text)}
                 />
             </View>
-            
+
             <View style={styles.inputContainer}>
             <Image source={require('../../assets/user_icon.png')} style={styles.icon} />
                 <TextInput
@@ -96,6 +96,7 @@ export default function Cadastro(){
                     onChangeText={(text) => setUserName(text)}
                 />
             </View>
+
             <View style={styles.inputContainer}>
                 <Image source={require('../../assets/email.png')} style={styles.icon} />
                 <TextInput
@@ -146,9 +147,6 @@ export default function Cadastro(){
             <TouchableOpacity style={styles.button} onPress={SignUp}>
                 <Text style={styles.textButton}>CONFIRMAR</Text>
             </TouchableOpacity>
-
-        
-
         </View>
     );
 }
@@ -182,9 +180,9 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         paddingVertical: 10,
-        padding: '3%'
+        padding: '3%',
     },
-    text: {
+    text:{
         color: '#F9F7F7',
         fontSize: 20,
         fontWeight: 'bold',
@@ -196,7 +194,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
     },
-    textInfo2:{
+    textInfo2: {
         color: '#F9F7F7',
         fontSize: 20,
         fontWeight: 'bold',

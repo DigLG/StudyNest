@@ -12,6 +12,7 @@ export default function Login(){
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
+
     useEffect(() => {
         const checkLogin = async () => {
             const user = await AsyncStorage.getItem('user');
@@ -23,7 +24,7 @@ export default function Login(){
                 authenticateUser();
             }
         };
-
+    
         checkLogin();
     }, []);
 
@@ -77,7 +78,6 @@ export default function Login(){
         }
     };
 
-
     return(
         <View style={styles.container}>
 
@@ -112,10 +112,10 @@ export default function Login(){
                     <Image 
                         source={hidePassword ? require('../../assets/eye.png') : require('../../assets/closedEye.png')} 
                         style={styles.icon} 
-                        />
+                    />
                 </TouchableOpacity>
             </View>
-
+            
             <View style={styles.checkboxContainer}>
                 <Checkbox
                     style={{marginRight: '2%'}}
@@ -127,14 +127,13 @@ export default function Login(){
             </View>
 
             <Text style={[styles.textLink, {marginTop: '5%'}]} onPress={() => navigation.navigate('RecuperarSenha', {userTypeOfMessage: 'recover_password'})}>ESQUECI MINHA SENHA</Text>
-
-
+            
+            
             <TouchableOpacity style={styles.button} onPress={authenticateUser}>
                 <Text style={styles.textButton}>LOGIN</Text>
             </TouchableOpacity>
 
             <Text style={styles.text}>NÃO POSSUI UMA CONTA? <Text style={styles.textLink} onPress={() => navigation.navigate('Cadastro')}>CLIQUE AQUI</Text></Text>              
-            
         </View>
     );
 }
@@ -183,8 +182,6 @@ const styles = StyleSheet.create({
         color: '#F9F7F7',
         fontSize: 16,
         fontWeight: 'bold',
-        marginTop: '5%',
-        paddingRight: '5%',
     },
     textLink:{
         textDecorationLine: 'underline',
@@ -204,7 +201,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 25,
-        marginBottom: '15%',
+        marginBottom: '5%',
+        marginTop: '15%',
     },
     buttonLink:{
         width: '100',

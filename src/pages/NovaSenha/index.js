@@ -27,13 +27,13 @@ export default function RecuperarSenha() {
                     confirma_senha: confirmPassword,
                 }),
             });
-
+            
             responseClone = response.clone();
             const statusCode = response.status;
             const data = await response.json();
             console.log('Response Data:', data);
             console.log(`Status code: ${statusCode}`);
-
+    
             if (statusCode === 202) {
                 navigation.navigate('Login')
             } else{
@@ -46,7 +46,7 @@ export default function RecuperarSenha() {
                     {cancelable: false},
                 );
             }
-
+            
         } catch (error) {
             console.error('Error parsing JSON from response:', error, responseClone);
             responseClone.text()
@@ -118,7 +118,7 @@ export default function RecuperarSenha() {
                 <Text style={styles.textButton}>CONFIRMAR</Text>
             </TouchableOpacity>
 
-
+        
         </View>
     );
 }
@@ -129,8 +129,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
         backgroundColor: '#112D4E',
-
-
+        
+       
     },
     containerLogo: {
         justifyContent: 'center',
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
         width: '100%',
         marginVertical: -10,
         marginTop: '5%',
-
+        
     },
     textInfo2: {
         color: '#F9F7F7',

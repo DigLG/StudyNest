@@ -1,97 +1,56 @@
 import React, { useState } from 'react';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { Alert, View, Text, TextInput, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
-export default function RecuperarSenha() {
+export default function Cadastro(){
     const navigation = useNavigation();
-    const [codes, setCodes] = useState(['', '', '', '', '', '']);
-    const inputs = Array(6).fill(0).map(() => React.createRef());
-    const codeNumber = parseInt(codes.join(''), 10);
-    const route = useRoute();
-    const email = route.params?.userEmail || 'Email temporário não encontrado';
-    const typeofmessage = route.params?.userTypeOfMessage || 'Tipo da mensagem não encontrado';
 
-    const handleChangeText = (text, index) => {
-        const newCodes = [...codes];
-        newCodes[index] = text;
-        setCodes(newCodes);
-        if (text.length === 1 && index !== 5) {
-            inputs[index + 1].current.focus();
-        } else if (text.length === 0 && index !== 0) {
-            inputs[index - 1].current.focus();
-        }
-    };
+    const [hidePassword, setHidePassword] = useState(true);
+    const [hideConfirmPassword, setHideConfirmPassword] = useState(true);
 
-    const handleKeyPress = (e, index) => {
-        if (e.nativeEvent.key === 'Backspace' && codes[index] === '' && index !== 0) {
-            inputs[index - 1].current.focus();
-        }
-    };
+    const [name, setName] = useState('');
+    const [username, setUserName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
-    const VerifyCode = async () => {
+
+    const SignUp = async () => {
         try {
             var responseClone;
-            const response = await fetch(`https://studynest-api.onrender.com/code/${email}/${codeNumber}`);
-            responseClone = response.clone();
-            const statusCode = response.status;
-            const data = await response.json();
-
-            console.log(`Status code: ${statusCode}`);
-
-            if (statusCode === 202 && typeofmessage === 'recover_password') {
-                navigation.navigate('NovaSenha', {userEmail: email})
-            } else if (statusCode === 202 && typeofmessage === 'activate_account') {
-                navigation.navigate('Login')
-            } else{
-                Alert.alert(
-                    "Erro",
-                    data.detail,
-                    [
-                      {text: 'OK'},
-                    ],
-                    {cancelable: false},
-                  );
-            }
-        } catch (error) {
-            console.error('Error parsing JSON from response:', error, responseClone);
-            responseClone.text()
-            .then(function (bodyText) {
-                console.log('Received the following instead of valid JSON:', bodyText);
-            });
-        }
-    };
-    const ResendCode = async () => {
-        try {
-            var responseClone;
-            const url = `https://studynest-api.onrender.com/sendemail?email=${email}&typeofmessage=${typeofmessage}`;
+            const url = `https://studynest-api.onrender.com/users?nome=${name}&nome_usuario=${username}&email=${email}&senha=${password}&confirma_senha=${confirmPassword}`;
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    nome: name,
+                    nome_usuario: username,
                     email: email,
-                    typeofmessage: typeofmessage,
+                    senha: password,
+                    confirma_senha: confirmPassword,
                 }),
             });
+            
             responseClone = response.clone();
             const statusCode = response.status;
             const data = await response.json();
             console.log('Response Data:', data);
             console.log(`Status code: ${statusCode}`);
-
+    
             if (statusCode === 202) {
                 Alert.alert(
                     "Sucesso!",
                     data.detail,
                     [
-                        {text: 'OK'},
+                        {text: 'OK', onPress: () => navigation.navigate('Login')},
                     ],
                     {cancelable: false},
                 );
             } else{
                 Alert.alert(
-                    "Erro",
+                    "Erro de cadastro",
                     data.detail,
                     [
                         {text: 'OK'},
@@ -99,6 +58,7 @@ export default function RecuperarSenha() {
                     {cancelable: false},
                 );
             }
+            
         } catch (error) {
             console.error('Error parsing JSON from response:', error, responseClone);
             responseClone.text()
@@ -108,139 +68,157 @@ export default function RecuperarSenha() {
         }
     };
 
-    return (
+    return(
         <View style={styles.container}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                <Image
-                    source={require('../../assets/back_button.png')} 
-                    style={styles.backButtonIcon}
-                    resizeMode="contain"
-                />
-            </TouchableOpacity>
+            <Text style={styles.text}>JÁ POSSUI CONTA? <Text style={styles.textLink} onPress={() => navigation.navigate('Login')}>CLIQUE  AQUI</Text></Text>
+    
+            <Text style={styles.textInfo}>CADASTRE-SE</Text>
+            <Text style={styles.textInfo2}>INSIRA SUAS INFORMAÇÕES</Text>
 
-            <View style={styles.containerLogo}>
-                <Image
-                    source={require('../../assets/StudyNest-logo.png')}
-                    style={{ width: '90%' }}
-                    resizeMode='contain'
+            <View style={styles.inputContainer}>
+            <Image source={require('../../assets/user_icon.png')} style={styles.icon} />
+                <TextInput
+                    style={styles.input}
+                    placeholderTextColor="#666"
+                    placeholder="NOME"
+                    autoCorrect={false}
+                    onChangeText={(text) => setName(text)}
                 />
             </View>
 
-            <Text style={styles.textInfo2}>INSIRA O CÓDIGO ENVIADO POR EMAIL</Text>
+            <View style={styles.inputContainer}>
+            <Image source={require('../../assets/user_icon.png')} style={styles.icon} />
+                <TextInput
+                    style={styles.input}
+                    placeholderTextColor="#666"
+                    placeholder="NOME DE USUARIO"
+                    autoCorrect={false}
+                    onChangeText={(text) => setUserName(text)}
+                />
+            </View>
 
-            <View style={styles.codeContainer}>
-                {codes.map((code, index) => (
-                    <TextInput
-                        key={index}
-                        ref={inputs[index]}
-                        style={styles.codeInput}
-                        value={code}
-                        onChangeText={(text) => handleChangeText(text, index)}
-                        onKeyPress={(e) => handleKeyPress(e, index)}
-                        keyboardType="numeric"
-                        maxLength={1}
+            <View style={styles.inputContainer}>
+                <Image source={require('../../assets/email.png')} style={styles.icon} />
+                <TextInput
+                    style={styles.input}
+                    placeholderTextColor="#666"
+                    placeholder="EMAIL"
+                    autoCorrect={false}
+                    onChangeText={(text) => setEmail(text)}
+                />
+            </View>
+
+            <View style={styles.inputContainer}>
+                <Image source={require('../../assets/senha.png')} style={styles.icon} />
+                <TextInput 
+                    style={styles.input}
+                    placeholderTextColor="#666"
+                    placeholder="SENHA"
+                    autoCorrect={false}
+                    secureTextEntry={hidePassword}
+                    onChangeText={(text) => setPassword(text)}
+                />
+                <TouchableOpacity onPress={() => setHidePassword(!hidePassword)} style={{ marginRight: 15 }}>
+                    <Image 
+                        source={hidePassword ? require('../../assets/eye.png') : require('../../assets/closedEye.png')} 
+                        style={styles.icon} 
                     />
-                ))}
+                </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.button} onPress={VerifyCode}>
-                <Text style={styles.textButton}>ENVIAR</Text>
-            </TouchableOpacity>
+            <View style={styles.inputContainer}>
+                <Image source={require('../../assets/senha.png')} style={styles.icon} />
+                <TextInput 
+                    style={styles.input}
+                    placeholderTextColor="#666"
+                    placeholder="CONFIRMAR SENHA"
+                    autoCorrect={false}
+                    secureTextEntry={hideConfirmPassword}
+                    onChangeText={(text) => setConfirmPassword(text)}
+                />
+                <TouchableOpacity onPress={() => setHideConfirmPassword(!hideConfirmPassword)} style={{ marginRight: 15 }}>
+                    <Image 
+                        source={hideConfirmPassword ? require('../../assets/eye.png') : require('../../assets/closedEye.png')} 
+                        style={styles.icon} 
+                    />
+                </TouchableOpacity>
+            </View>
 
-            <Text style={styles.text}>
-                Não recebeu o código? <Text style={styles.textLink} onPress={ResendCode}>Clique aqui para reenviar!</Text>
-            </Text>              
+            <TouchableOpacity style={styles.button} onPress={SignUp}>
+                <Text style={styles.textButton}>CONFIRMAR</Text>
+            </TouchableOpacity>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        justifyContent: 'flex-start',
-        alignItems: 'center',
+    container:{
         flex: 1,
-        backgroundColor: '#112D4E',
-    },
-    containerLogo: {
         justifyContent: 'center',
         alignItems: 'center',
-        width: '100%',
-        marginVertical: -15,
-        marginTop: '5%',
+        backgroundColor: '#112D4E',
+        paddingHorizontal: 20,
+        paddingTop: 50, // Adicionado para afastar o texto do topo
     },
-    textLink: {
-        textDecorationLine: 'underline',
-        color: '#DBE2EF',
+    inputContainer: {
+        width: '100%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderColor: '#000',
+        borderRadius: 25,
+        backgroundColor: '#F9F7F7',
+        marginBottom: 15,
+    },
+    icon: {
+        width: 40,
+        height: 40,
+        marginLeft: 10,
+    },
+    input:{
+        flex: 1,
+        color: '#000',
+        fontSize: 18,
+        fontWeight: 'bold',
+        paddingVertical: 10,
+        padding: '3%',
+    },
+    text:{
+        color: '#F9F7F7',
         fontSize: 20,
-        marginLeft: 21,
-
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    textInfo: {
+        color: '#F9F7F7',
+        fontSize: 40,
+        fontWeight: 'bold',
+        marginBottom: 20,
     },
     textInfo2: {
         color: '#F9F7F7',
         fontSize: 20,
         fontWeight: 'bold',
-        textAlign: 'center',
-        marginLeft: 1,
-        marginVertical: 20,
+        marginBottom: 80,
     },
-    instructions: {
-        color: '#F9F7F7',
-        fontSize: 16,
-        fontWeight: 'bold',
-        paddingHorizontal: 20,
-        textAlign: 'center',
-        marginVertical: 10,
-    },
-    codeContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: '80%',
-        marginVertical: 20,
-    },
-    codeInput: {
-        width: 40,
-        height: 40,
-        borderWidth: 1,
-        borderColor: '#000',
-        textAlign: 'center',
-        fontSize: 18,
-        backgroundColor: '#F9F7F7',
-        borderRadius: 6,
-    },
-    textButton: {
-        fontWeight: 'bold',
+    textLink:{
+        textDecorationLine: 'underline',
+        color: '#DBE2EF',
         fontSize: 20,
+        fontWeight: 'bold',
+    },
+    textButton:{
+        fontWeight: 'bold',
+        fontSize: 18,
         color: '#112D4E',
     },
-    button: {
+    button:{
         backgroundColor: '#F9F7F7',
-        width: '80%',
+        width: '100%',
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 25,
-        marginVertical: 20,
-    },
-    backButton: {
-        position: 'absolute',
-        top: 70,
-        left: 10,
-        zIndex: 1,
-    },
-    backButtonIcon: {
-        width: 60,
-        height: 60,
-        tintColor: '#F9F7F7',
-    },
-    text: {
-        width: '80%',
-        color: '#F9F7F7',
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginTop: 20, 
-        paddingRight: 5,
-        marginLeft: 20,
-        textAlign: 'center',
+        marginBottom: 15,
+        marginTop: '20%',
     },
 });

@@ -1,306 +1,211 @@
-import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
-import { Alert, KeyboardAvoidingView, Modal, BackHandler, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, TouchableWithoutFeedback } from "react-native";
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { Alert, View, Text, TextInput, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import Checkbox from 'expo-checkbox'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Foto() {
+export default function Login(){
     const navigation = useNavigation();
-    const route = useRoute();
-    const [modalVisible, setModalVisible] = useState(false);
-    const [disciplinaNome, setDisciplinaNome] = useState('');
-    const [turma, setTurma] = useState('');
-    const [filteredDisciplinas, setFilteredDisciplinas] = useState([]);
-    const [showTurmas, setShowTurmas] = useState(false);
-    const [disciplinas, setDisciplinas] = useState([]);
-    const [turmas, setTurmas] = useState([]);
-    const [emailFromStorage, setEmailFromStorage] = useState('');
+
+    const [hidePassword, setHidePassword] = useState(true);
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
 
     useEffect(() => {
-        getEmailFromStorage();
-        fetchDisciplinas();
+        const checkLogin = async () => {
+            const user = await AsyncStorage.getItem('user');
+            if (user !== null) {
+                const { email, password } = JSON.parse(user);
+                setEmail(email);
+                setPassword(password);
+                setRememberMe(true);
+                authenticateUser();
+            }
+        };
+    
+        checkLogin();
     }, []);
 
-    const getEmailFromStorage = async () => {
+    const authenticateUser = async () => {
         try {
-            const userData = await AsyncStorage.getItem('user');
-            if (userData !== null) {
-                const { email } = JSON.parse(userData);
-                setEmailFromStorage(email);
-            }
-        } catch (error) {
-            console.error('Erro ao obter email do AsyncStorage:', error);
-        }
-    };
-
-    const fetchDisciplinas = async () => {
-        try {
-            const response = await fetch('https://studynest-api.onrender.com/disciplinas');
-            if (!response.ok) {
-                throw new Error('Erro ao buscar disciplinas');
-            }
+            var responseClone;
+            const response = await fetch(`https://studynest-api.onrender.com/users/${email}/${password}`);
+            responseClone = response.clone();
+            const statusCode = response.status;
             const data = await response.json();
-            setDisciplinas(data);
-        } catch (error) {
-            console.error('Erro ao buscar disciplinas:', error);
-        }
-    };
 
-    const fetchTurmas = async (codigoDisciplina) => {
-        try {
-            const response = await fetch(`https://studynest-api.onrender.com/turmas/${codigoDisciplina}`);
-            if (!response.ok) {
-                throw new Error('Erro ao buscar turmas');
+            console.log(`Status code: ${statusCode}`);
+
+            if (statusCode === 202 || statusCode === 405) {
+                if (rememberMe) {
+                    await AsyncStorage.setItem('user', JSON.stringify({ email, password }));
+                    navigation.navigate('MainDrawer', {
+                        screen: 'Foto'
+                      });
+                }
+                navigation.navigate('MainDrawer', {
+                    screen: 'Foto'
+                  });
+            } else{
+                if (statusCode === 422){
+                    Alert.alert(
+                        "Erro de autenticação",
+                        data.detail,
+                        [
+                        {text: 'OK', onPress: () => navigation.navigate('CodigoValidacao', {userEmail: email, userTypeOfMessage: 'activate_account'})},
+                        ],
+                        {cancelable: false},
+                    );
+                } else{
+                    Alert.alert(
+                        "Erro de autenticação",
+                        data.detail,
+                        [
+                        {text: 'OK'},
+                        ],
+                        {cancelable: false},
+                    );
+                }
             }
-            const data = await response.json();
-            setTurmas(data);
         } catch (error) {
-            console.error('Erro ao buscar turmas:', error);
-        }
-    };
-
-    const handleButtonPress = () => {
-        setModalVisible(true);
-    };
-
-    const handleConfirmarPress = async () => {
-        try {
-            const url = `https://studynest-api.onrender.com/add_grade?email_usuario=${encodeURIComponent(emailFromStorage)}&codigo_disciplina=${encodeURIComponent(disciplinaNome)}&turma_disciplina=${encodeURIComponent(turma)}`;
-
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+            console.error('Error parsing JSON from response:', error, responseClone);
+            responseClone.text()
+            .then(function (bodyText) {
+                console.log('Received the following instead of valid JSON:', bodyText);
             });
-
-            if (!response.ok) {
-                throw new Error('Erro ao cadastrar disciplina');
-            }
-
-            const data = await response.json();
-            console.log('Dados cadastrados com sucesso:', data.message);
-            setModalVisible(false);
-
-        } catch (error) {
-            console.error('Erro ao cadastrar disciplina:', error);
-            Alert.alert('Erro', 'Não foi possível cadastrar a disciplina. Por favor, tente novamente.');
         }
     };
 
-    const handleCancelarPress = () => {
-        setModalVisible(false);
-    };
+    return(
+        <View style={styles.container}>
 
-    const filterDisciplinas = (text) => {
-        setDisciplinaNome(text);
-        setFilteredDisciplinas(
-            disciplinas.filter(d => d.toLowerCase().includes(text.toLowerCase()))
-        );
-    };
-
-    const handleDisciplinaSelect = (disciplina) => {
-        setDisciplinaNome(disciplina);
-        setFilteredDisciplinas([]);
-        fetchTurmas(disciplina);
-    };
-
-    const renderItem = ({ item }) => (
-        <TouchableWithoutFeedback onPress={() => handleDisciplinaSelect(item)}>
-            <View style={styles.item}>
-                <Text style={styles.itemText}>{item}</Text>
+            <View style={styles.containerLogo}>
+                <Image
+                    source={require('../../assets/StudyNest-logo.png')}
+                    style={{width: '100%'}}
+                    resizeMode='contain'
+                />
             </View>
-        </TouchableWithoutFeedback>
-    );
 
-    return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-            <View style={styles.content}>
-                <TouchableOpacity onPress={handleButtonPress} style={styles.button}>
-                    <Text style={styles.buttonText}>Cadastrar Disciplina</Text>
+            <View style={styles.inputContainer}>
+                <Image source={require('../../assets/email.png')} style={styles.icon} />
+                <TextInput
+                    style={styles.input}
+                    placeholder="EMAIL"
+                    autoCorrect={false}
+                    onChangeText={setEmail}
+                />
+            </View>
+
+            <View style={styles.inputContainer}>
+                <Image source={require('../../assets/senha.png')} style={styles.icon} />
+                <TextInput 
+                    style={styles.input}
+                    placeholder="SENHA"
+                    autoCorrect={false}
+                    secureTextEntry={hidePassword}
+                    onChangeText={setPassword}
+                />
+                <TouchableOpacity onPress={() => setHidePassword(!hidePassword)} style={{ marginRight: 15 }}>
+                    <Image 
+                        source={hidePassword ? require('../../assets/eye.png') : require('../../assets/closedEye.png')} 
+                        style={styles.icon} 
+                    />
                 </TouchableOpacity>
             </View>
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                    setModalVisible(!modalVisible);
-                }}
-            >
-                <View style={styles.centeredView}>
-                    <KeyboardAvoidingView
-                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                        style={styles.modalView}
-                    >
-                        <Text style={[styles.modalText, styles.leftAlign]}>Nome/Código da Disciplina:</Text>
-                        <TextInput
-                            style={[styles.input, styles.inputText]}
-                            onChangeText={filterDisciplinas}
-                            value={disciplinaNome}
-                        />
-                        {filteredDisciplinas.length > 0 && (
-                            <FlatList
-                                data={filteredDisciplinas}
-                                renderItem={renderItem}
-                                keyExtractor={(item) => item}
-                                style={styles.suggestions}
-                            />
-                        )}
-                        <Text style={[styles.modalText, styles.leftAlign]}>Turma:</Text>
-                        <TouchableOpacity
-                            style={styles.input}
-                            onPress={() => setShowTurmas(!showTurmas)}
-                        >
-                            <Text style={styles.inputText}>{turma || "Selecione a Turma"}</Text>
-                        </TouchableOpacity>
-                        {showTurmas && (
-                            <FlatList
-                                data={turmas}
-                                renderItem={({ item }) => (
-                                    <TouchableWithoutFeedback onPress={() => {
-                                        setTurma(item);
-                                        setShowTurmas(false);
-                                    }}>
-                                        <View style={styles.item}>
-                                            <Text style={styles.itemText}>{item}</Text>
-                                        </View>
-                                    </TouchableWithoutFeedback>
-                                )}
-                                keyExtractor={(item) => item}
-                                style={styles.suggestions}
-                            />
-                        )}
-                        <View style={styles.buttonContainer}>
-                            <TouchableOpacity
-                                style={styles.modalButton}
-                                onPress={handleConfirmarPress}
-                            >
-                                <Text style={styles.textStyle}>Confirmar</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={styles.modalButton}
-                                onPress={handleCancelarPress}
-                            >
-                                <Text style={styles.textStyle}>Cancelar</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </KeyboardAvoidingView>
-                </View>
-            </Modal>
-        </KeyboardAvoidingView>
-    );
-    return(
-        <View Style={StyleSheet.container}>
-            <TouchableOpacity Style={Styles.button} onPress={() => navigation.navigate('CameraPage')}>
-                <Text style={Styles.textButton}>CAMERA</Text>
+            
+            <View style={styles.checkboxContainer}>
+                <Checkbox
+                    style={{marginRight: '2%'}}
+                    disabled={false}
+                    value={rememberMe}
+                    onValueChange={(newValue) => setRememberMe(newValue)}
+                />
+                <Text style={styles.text}>MANTER-SE CONECTADO</Text>
+            </View>
+
+            <Text style={[styles.textLink, {marginTop: '5%'}]} onPress={() => navigation.navigate('RecuperarSenha', {userTypeOfMessage: 'recover_password'})}>ESQUECI MINHA SENHA</Text>
+            
+            
+            <TouchableOpacity style={styles.button} onPress={authenticateUser}>
+                <Text style={styles.textButton}>LOGIN</Text>
             </TouchableOpacity>
+
+            <Text style={styles.text}>NÃO POSSUI UMA CONTA? <Text style={styles.textLink} onPress={() => navigation.navigate('Cadastro')}>CLIQUE AQUI</Text></Text>              
         </View>
     );
 }
 
-
 const styles = StyleSheet.create({
-    container: {
+    container:{
         flex: 1,
-        backgroundColor: '#F9F7F7',
-        alignItems: 'center',
         justifyContent: 'center',
-    },
-
-    content: {
-        position: 'absolute',
-        bottom: 20,
-        width: '100%',
         alignItems: 'center',
-    },
-    button: {
-        paddingVertical: 10,
-        paddingHorizontal: 20,
         backgroundColor: '#112D4E',
-        borderRadius: 25,
     },
-    buttonText: {
-        color: 'white',
+    containerLogo:{
+        justifyContent: 'top',
+        alignItems: 'center',
+        width: '100%',
+    },
+    inputContainer: {
+        width: '80%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderColor: '#000',
+        borderRadius: 25,
+        backgroundColor: '#F9F7F7',
+        marginBottom: '5%',
+    },
+    checkboxContainer: {
+        width: '75%',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+    },
+    icon: {
+        width: 40,
+        height: 40,
+        marginLeft: 10,
+    },
+    input:{
+        width: '100%',
+        color: '#000',
+        fontSize: 18,
+        fontWeight: 'bold',
+        padding: '3%',
+        flex: 1,
+    },
+    text:{
+        color: '#F9F7F7',
         fontSize: 16,
         fontWeight: 'bold',
     },
-    centeredView: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: 22,
+    textLink:{
+        textDecorationLine: 'underline',
+        color: '#DBE2EF',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
-    modalView: {
-        backgroundColor: "#D9D9D9",
-        borderRadius: 20,
-        padding: 35,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-        width: '90%',
-    },
-    modalText: {
-        marginBottom: 10,
+    textButton:{
+        fontWeight: 'bold',
+        fontSize: 18,
         color: '#112D4E',
-        textAlign: "left",
-        fontWeight: 'bold',
     },
-    input: {
-        height: 40,
-        backgroundColor: 'white',
-        paddingHorizontal: 10,
-        borderRadius: 20,
-        marginBottom: 20,
-        width: '100%',
-        justifyContent: 'center'
+    button:{
+        backgroundColor: '#F9F7F7',
+        width: '80%',
+        height: '5%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 25,
+        marginBottom: '5%',
+        marginTop: '15%',
     },
-    inputText: {
-        color: 'black',
-        fontWeight: 'bold',
-    },
-    leftAlign: {
-        textAlign: 'left',
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        width: '100%',
-    },
-    modalButton: {
-        backgroundColor: "#112D4E",
-        borderRadius: 20,
-        padding: 10,
-        elevation: 2,
-        marginHorizontal: 10,
-    },
-    textStyle: {
-        color: "white",
-        fontWeight: "bold",
-        textAlign: "center",
-    },
-    suggestions: {
-        maxHeight: 100,
-        backgroundColor: 'white',
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        width: '100%',
-        marginBottom: 20,
-    },
-    item: {
-        padding: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
-    },
-    itemText: {
-        color: 'black',
+    buttonLink:{
+        width: '100',
+        height: '5%',
     },
 });
