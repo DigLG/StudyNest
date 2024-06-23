@@ -24,7 +24,7 @@ export default function StackRoutes(){
                 options={{ headerShown: false }}
             />
             <Stack.Screen
-                name="Foto"
+                name="MainDrawer"
                 component= {DrawerRoutes}
                 options={{ headerShown: false}}
             />
