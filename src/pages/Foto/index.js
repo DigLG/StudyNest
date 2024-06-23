@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
-import { Alert, KeyboardAvoidingView, Modal, BackHandler, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, TouchableWithoutFeedback } from "react-native";
+import { Alert, KeyboardAvoidingView, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, TouchableWithoutFeedback } from "react-native";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -119,9 +119,15 @@ export default function Foto() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <View style={styles.content}>
-                <TouchableOpacity onPress={handleButtonPress} style={styles.button}>
-                    <Text style={styles.buttonText}>Cadastrar Disciplina</Text>
-                </TouchableOpacity>
+                <View style={styles.buttonRow}>
+                    <TouchableOpacity onPress={handleButtonPress} style={styles.button}>
+                        <Text style={styles.buttonText}>Cadastrar Disciplina</Text>
+                    </TouchableOpacity>
+        
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CameraPage')}>
+                        <Text style={styles.buttonText}>CAMERA</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
             <Modal
                 animationType="slide"
@@ -192,18 +198,8 @@ export default function Foto() {
                 </View>
             </Modal>
         </KeyboardAvoidingView>
-
-    return(
-
-        
-        <View Style={StyleSheet.container}>
-            <TouchableOpacity Style={Styles.button} onPress={() => navigation.navigate('CameraPage')}>
-                <Text style={Styles.textButton}>CAMERA</Text>
-            </TouchableOpacity>
-        </View>
-
     );
-}
+}    
 
 const styles = StyleSheet.create({
     container: {
@@ -212,23 +208,30 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-
     content: {
         position: 'absolute',
         bottom: 20,
         width: '100%',
         alignItems: 'center',
     },
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '90%',
+    },
     button: {
+        flex: 1,
         paddingVertical: 10,
         paddingHorizontal: 20,
         backgroundColor: '#112D4E',
         borderRadius: 25,
+        marginHorizontal: 5,
     },
     buttonText: {
         color: 'white',
         fontSize: 16,
         fontWeight: 'bold',
+        textAlign: 'center',
     },
     centeredView: {
         flex: 1,
@@ -306,4 +309,3 @@ const styles = StyleSheet.create({
         color: 'black',
     },
 });
-
