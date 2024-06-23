@@ -10,6 +10,7 @@ import RecuperarSenha from '../pages/RecuperarSenha'
 import CodigoValidacao from '../pages/CodigoValidacao'
 import NovaSenha from '../pages/NovaSenha'
 import CameraPage from '../pages/CameraPage'
+import Pasta from "../pages/Pasta";
 
 import DrawerRoutes from "./drawer.routes";
 
@@ -71,6 +72,11 @@ export default function StackRoutes(){
             <Stack.Screen
                 name="CameraPage"
                 component= {CameraPage}
+                options={{ headerShown: false }}
+            />
+            <Stack.Screen
+                name="Pasta"
+                component= {Pasta}
                 options={{ headerShown: false }}
             />
         </Stack.Navigator>

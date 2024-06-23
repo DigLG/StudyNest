@@ -15,11 +15,18 @@ export default function Foto() {
     const [disciplinas, setDisciplinas] = useState([]);
     const [turmas, setTurmas] = useState([]);
     const [emailFromStorage, setEmailFromStorage] = useState('');
+    const [cadastradas, setCadastradas] = useState([]);
 
     useEffect(() => {
         getEmailFromStorage();
         fetchDisciplinas();
     }, []);
+
+    useEffect(() => {
+        if (emailFromStorage) {
+            fetchDisciplinasCadastradas(emailFromStorage);
+        }
+    }, [emailFromStorage]);
 
     const getEmailFromStorage = async () => {
         try {
@@ -43,6 +50,19 @@ export default function Foto() {
             setDisciplinas(data);
         } catch (error) {
             console.error('Erro ao buscar disciplinas:', error);
+        }
+    };
+
+    const fetchDisciplinasCadastradas = async (email) => {
+        try {
+            const response = await fetch(`https://studynest-api.onrender.com/disciplinasCadastradas/${email}`);
+            if (!response.ok) {
+                throw new Error('Erro ao buscar disciplinas cadastradas');
+            }
+            const data = await response.json();
+            setCadastradas(data);
+        } catch (error) {
+            console.error('Erro ao buscar disciplinas cadastradas:', error);
         }
     };
 
@@ -77,6 +97,8 @@ export default function Foto() {
             if (!response.ok) {
                 throw new Error('Erro ao cadastrar disciplina');
             }
+    
+            fetchDisciplinasCadastradas(emailFromStorage);
     
             const data = await response.json();
             console.log('Dados cadastrados com sucesso:', data.message);
@@ -113,12 +135,33 @@ export default function Foto() {
         </TouchableWithoutFeedback>
     );
 
+    const renderFolder = ({ item }) => (
+        <TouchableOpacity
+            style={styles.folder}
+            onPress={() => {
+                console.log('Pasta clicada:', item); 
+                navigation.navigate('Pasta', { pasta: item });
+            }}
+        >
+            <View style={styles.folder}>
+                <Text style={styles.folderText}>{item}</Text>
+            </View>
+        </TouchableOpacity>
+    );
+
     return (
         <KeyboardAvoidingView
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <View style={styles.content}>
+                <FlatList
+                    data={cadastradas}
+                    renderItem={renderFolder}
+                    keyExtractor={(item) => item}
+                    numColumns={2}
+                    columnWrapperStyle={styles.row}
+                />
                 <View style={styles.buttonRow}>
                     <TouchableOpacity onPress={handleButtonPress} style={styles.button}>
                         <Text style={styles.buttonText}>Cadastrar Disciplina</Text>
@@ -199,7 +242,7 @@ export default function Foto() {
             </Modal>
         </KeyboardAvoidingView>
     );
-}    
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -213,11 +256,16 @@ const styles = StyleSheet.create({
         bottom: 20,
         width: '100%',
         alignItems: 'center',
+        top: 20,
+    },
+    row: {
+        justifyContent: 'space-between',
     },
     buttonRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '90%',
+        marginTop: 20,
     },
     button: {
         flex: 1,
@@ -307,5 +355,18 @@ const styles = StyleSheet.create({
     },
     itemText: {
         color: 'black',
+    },
+    folder: {
+        backgroundColor: '#112D4E',
+        padding: 20,
+        margin: 10,
+        borderRadius: 10,
+        width: 150,
+        alignItems: 'center',
+    },
+    folderText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
     },
 });
