@@ -4,8 +4,9 @@ import {Image, TouchableOpacity } from 'react-native';
 import Foto from "../pages/Foto";
 import Falta from '../pages/Falta'
 import Resumo from '../pages/Resumo'
+import FaltaRegistro from '../pages/FaltaRegistro';
+import Configuracao from '../pages/Configuracao'
 import CameraPage from '../pages/CameraPage'
-
 
 const Drawer = createDrawerNavigator();
 
@@ -40,6 +41,16 @@ export default function DrawerRoutes(){
                 name="CameraPage"
                 component= {CameraPage}
                 options={{headerShown: false}}
+            />
+            <Drawer.Screen
+                name="Configuração"
+                component = {Configuracao}
+                options = {{headerShown: false}}
+            />
+            <Drawer.Screen //ESTOU COLOCANDO AQUI TEMPORARIAMENTE PARA REALIZAR TESTES
+                name="FaltaRegistro"
+                component = {FaltaRegistro}
+                options = {{headerShown: false}}
             />
         </Drawer.Navigator>
     )
