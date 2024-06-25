@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { useState, useEffect } from 'react';
-import { Alert, KeyboardAvoidingView, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, TouchableWithoutFeedback } from "react-native";
+import { Alert, KeyboardAvoidingView, Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View, FlatList, TouchableWithoutFeedback, BackHandler } from "react-native";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -27,6 +27,38 @@ export default function Foto() {
             fetchDisciplinasCadastradas(emailFromStorage);
         }
     }, [emailFromStorage]);
+
+
+    useEffect(() => {
+        const backAction = () => {
+            Alert.alert("Calma ai!", "Você tem realmente deseja sair do aplicativo?", [
+                {
+                    text: "Cancelar",
+                    onPress: () => null,
+                    style: "cancel"
+                },
+                { text: "Confirmar", onPress: () => BackHandler.exitApp() }
+            ]);
+            return true;
+        };
+
+        const onScreenFocus = () => {
+            BackHandler.addEventListener("hardwareBackPress", backAction);
+        };
+
+        const onScreenBlur = () => {
+            BackHandler.removeEventListener("hardwareBackPress", backAction);
+        };
+
+        navigation.addListener('focus', onScreenFocus);
+        navigation.addListener('blur', onScreenBlur);
+
+        return () => {
+            navigation.removeListener('focus', onScreenFocus);
+            navigation.removeListener('blur', onScreenBlur);
+        };
+    }, []);
+
 
     const getEmailFromStorage = async () => {
         try {

@@ -4,9 +4,7 @@ import {Image, TouchableOpacity } from 'react-native';
 import Foto from "../pages/Foto";
 import Falta from '../pages/Falta'
 import Resumo from '../pages/Resumo'
-import FaltaRegistro from '../pages/FaltaRegistro';
 import Configuracao from '../pages/Configuracao'
-import CameraPage from '../pages/CameraPage'
 
 const Drawer = createDrawerNavigator();
 
@@ -21,7 +19,7 @@ export default function DrawerRoutes(){
                         <TouchableOpacity onPress={() => navigation.navigate('Perfil')}>
                             <Image
                                 source={require('../assets/profile.png')}
-                                style={{ width: 25, height: 25, marginRight: 15 }}
+                                style={{ width: 40, height: 40, marginRight: 15 }}
                             />
                         </TouchableOpacity>
                     ),
@@ -30,26 +28,34 @@ export default function DrawerRoutes(){
             <Drawer.Screen
                 name="Falta"
                 component= {Falta}
-                options={{headerShown: false}}
+                options={({ navigation }) => ({
+                    headerRight: () => (
+                        <TouchableOpacity onPress={() => navigation.navigate('Perfil')}>
+                            <Image
+                                source={require('../assets/profile.png')}
+                                style={{ width: 40, height: 40, marginRight: 15 }}
+                            />
+                        </TouchableOpacity>
+                    ),
+                })}
             />
             <Drawer.Screen
                 name="Resumo"
                 component= {Resumo}
-                options={{headerShown: false}}
-            />
-            <Drawer.Screen
-                name="CameraPage"
-                component= {CameraPage}
-                options={{headerShown: false}}
+                options={({ navigation }) => ({
+                    headerRight: () => (
+                        <TouchableOpacity onPress={() => navigation.navigate('Perfil')}>
+                            <Image
+                                source={require('../assets/profile.png')}
+                                style={{ width: 40, height: 40, marginRight: 15 }}
+                            />
+                        </TouchableOpacity>
+                    ),
+                })}
             />
             <Drawer.Screen
                 name="Configuração"
                 component = {Configuracao}
-                options = {{headerShown: false}}
-            />
-            <Drawer.Screen //ESTOU COLOCANDO AQUI TEMPORARIAMENTE PARA REALIZAR TESTES
-                name="FaltaRegistro"
-                component = {FaltaRegistro}
                 options = {{headerShown: false}}
             />
         </Drawer.Navigator>

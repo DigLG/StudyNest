@@ -6,10 +6,6 @@ export default function Falta() {
     const navigation = useNavigation();
     return (
         <View style={styles.container}>
-            <View style={styles.mainContainer}>
-                <Image source={require('../../assets/menu.png')} style={styles.menu} />
-                <Image source={require('../../assets/profile.png')} style={styles.profile} />
-            </View>
             <View style={styles.searchContainer}>
                 <Image source={require('../../assets/search.png')} style={styles.search} />
                 <TextInput
